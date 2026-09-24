@@ -40,6 +40,7 @@
   const resetBtn = document.getElementById("resetBtn");
   const historyGrid = document.getElementById("historyGrid");
   const historyEmpty = document.getElementById("historyEmpty");
+  const primeGrid = document.getElementById("primeGrid");
 
   // ---------- Sound (tiny synthesized tones, no assets needed) ----------
 
@@ -127,6 +128,22 @@
     chip.className = "chip";
     chip.textContent = value;
     historyGrid.insertBefore(chip, historyGrid.firstChild);
+
+    const primeItem = primeGrid.querySelector(`[data-prime="${value}"]`);
+    if (primeItem) {
+      primeItem.classList.add("is-hit");
+      primeItem.setAttribute("aria-label", `${value}、当選`);
+    }
+  }
+
+  function buildPrimeList() {
+    ALL_PRIMES.forEach((prime) => {
+      const item = document.createElement("li");
+      item.className = "prime-item";
+      item.dataset.prime = prime;
+      item.textContent = prime;
+      primeGrid.appendChild(item);
+    });
   }
 
   // ---------- Core reveal sequence ----------
@@ -225,6 +242,10 @@
     emptyMsg.id = "historyEmpty";
     emptyMsg.textContent = "まだ番号は出ていません";
     historyGrid.appendChild(emptyMsg);
+    primeGrid.querySelectorAll(".is-hit").forEach((item) => {
+      item.classList.remove("is-hit");
+      item.removeAttribute("aria-label");
+    });
 
     drawBtn.disabled = false;
     drawBtnLabel.textContent = "抽選する";
@@ -233,6 +254,7 @@
 
   // ---------- Init ----------
 
+  buildPrimeList();
   updateCounter();
   drawBtn.addEventListener("click", handleDraw);
   resetBtn.addEventListener("click", handleReset);
